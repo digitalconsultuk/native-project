@@ -1,0 +1,8 @@
+:root{
+    margin:0;
+    padding: 0;
+}
+body {
+    line-height: 1.5; /* Improves readability */
+    -webkit-font-smoothing: antialiased; /* Makes fonts look crisper */
+}
