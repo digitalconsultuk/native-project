@@ -41,11 +41,16 @@ export default function MobileNavigation() {
         onClose={() => setIsDrawerOpen(false)}
       >
         <Box
-          sx={{ width: 200 }}
+          sx={{ width: 215 }}
           role="presentation"
           onClick={() => setIsDrawerOpen(false)}
         >
-          <List>
+          <div className={'flex flex-row gap-4'}>
+            <img className={'ml-1.5 mt-1.5 w-32 h-auto object-contain'}
+                 src={native_cave}
+                 alt={'native_logo'}/>
+          </div>
+          <List className={'-mt-2'}>
             {menuItems.map((text) => (
               <ListItem key={text}>
                 <Link to={'/'+text}>

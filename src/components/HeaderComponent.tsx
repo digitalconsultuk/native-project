@@ -1,6 +1,6 @@
 
 import '../App.css'
-import {Link} from "react-router";
+import {NavLink, Link} from "react-router";
 import native_cave from '../assets/native_cave.png'
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 
@@ -18,9 +18,15 @@ const HeaderComponent = () => {
               </Link>
             </div>
             <div className={'flex flex-row gap-4'}>
-              <Link to="/home" className={'text-md md:text-xl font-mono'}>Home</Link>
-              <Link to="/" className={'text-md md:text-xl font-mono'}>About</Link>
-              <Link to="/" className={'text-md md:text-xl font-mono'}>Contact</Link>
+              <NavLink to="/home" className={({ isActive }) =>
+                isActive ? "text-blue-600 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
+              }>Home</NavLink>
+              <NavLink to="/about" className={({ isActive }) =>
+                isActive ? "text-blue-600 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
+              }>About</NavLink>
+              <NavLink to="/" className={({ isActive }) =>
+                isActive ? "text-blue-600 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
+              }>Contact</NavLink>
             </div>
             <div className={'flex flex-row'}>
               <span className={'text-[20px] font-mono text-amber-500'}><LocalPhoneIcon className={'mr-2 text-black'}/>01913434344</span>
