@@ -11,7 +11,7 @@ const HeroComponent = () => {
   return (
     <>
       <section className={'flex flex-col p-0 -mt-6 md:mt-2.5 md:flex-row md:gap-2'}>
-        <div className={'flex flex-col md:flex-row md:flex-1/2'}>
+        <div className={'flex flex-col md:flex-row md:flex-1/2 shadow-2xl'}>
           <h1 className={'text-left font-mono pt-4 md:pt-10 pl-2 align-middle pb-0 shadow-2xl rounded-2xl md:flex-row md:flex-1/2'}>
             <span className={'text-amber-500 text-3xl font-mono md:text-7xl'}>Bold Flavors,<br/>Fresh Catches</span>
             <p className={'mt-2 text-wrap text-lg md:text-2xl md:pl-3'}>Delight in our signature seafood boil, packed with the freshest shrimp, crab legs,

@@ -1,8 +1,8 @@
 
 
 import '../App.css'
-import {PageComponent} from "../components/PageComponent.tsx";
 import {HeroComponent} from "../components/HeroComponent.tsx";
+import {MenuComponent} from "../components/MenuComponent.tsx";
 const HomePage = () => {
   return (
     <>
@@ -10,7 +10,7 @@ const HomePage = () => {
         <div className={'flex flex-col gap-2'}>
           <HeroComponent/>
         </div>
-        <PageComponent/>
+        <MenuComponent/>
       </section>
     </>
   )
