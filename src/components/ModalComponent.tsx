@@ -25,9 +25,11 @@ const style = {
 
 interface ModalProps {
   open: boolean;
+  menu:string
   onClose: () => void;
 }
-const ModalComponent: React.FC<ModalProps> = ({ open, onClose }) => {
+
+const ModalComponent: React.FC<ModalProps> = ({ open, onClose,menu }) => {
   return (
     <div>
       <Modal
@@ -51,7 +53,7 @@ const ModalComponent: React.FC<ModalProps> = ({ open, onClose }) => {
             <Typography id="transition-modal-description" sx={{ mt: 2 }}>
               <ol className={'list-decimal'}>
                 <li>
-                  Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                  {menu}
                   <div className={'mt-0.5'}>
                     <Chip icon={<CurrencyPoundIcon fontSize={'small'} className={'-mr-3 text-black'}/>} label="5" variant="outlined" className={'bg-green-400 text-lg'}/>
                   </div>

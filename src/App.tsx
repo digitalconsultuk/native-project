@@ -1,5 +1,5 @@
 
-import {Route, Routes} from "react-router";
+import {Route, Routes, Navigate} from "react-router";
 import {HomePage} from "./pages/HomePage";
 import {HeaderComponent} from "./components/HeaderComponent";
 import MobileNavigation from "./components/MobileComponent";
@@ -11,7 +11,8 @@ function App() {
          <HeaderComponent/>
          <MobileNavigation />
             <Routes>
-               <Route path="/home" element={<HomePage/>}/>
+              <Route path="/" element={<Navigate to="/home" replace />}/>
+              <Route path="/home" element={<HomePage />}/>
             </Routes>
       </>
    )

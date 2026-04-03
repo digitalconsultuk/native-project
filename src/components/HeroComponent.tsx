@@ -1,7 +1,7 @@
 
 /**
- * hero component section
-* */
+ * Hero component section
+ */
 import SeaFood from '../assets/seafood.png'
 import SeaFood1 from '../assets/seafood_2.png'
 import Button from '@mui/material/Button';
@@ -9,27 +9,58 @@ import SendIcon from '@mui/icons-material/Send';
 
 const HeroComponent = () => {
   return (
-    <>
-      <section className={'flex flex-col p-0 -mt-6 md:mt-2.5 md:flex-row md:gap-2'}>
-        <div className={'flex flex-col md:flex-row md:flex-1/2 shadow-2xl'}>
-          <h1 className={'text-left font-mono pt-4 md:pt-10 pl-2 align-middle pb-0 shadow-2xl rounded-2xl md:flex-row md:flex-1/2'}>
-            <span className={'text-amber-500 text-3xl font-mono md:text-7xl'}>Bold Flavors,<br/>Fresh Catches</span>
-            <p className={'mt-2 text-wrap text-lg md:text-2xl md:pl-3'}>Delight in our signature seafood boil, packed with the freshest shrimp, crab legs,
-              and clams, all seasoned to perfection. Native Cave Restaurant brings the ocean’s best to your table, crafted with care and flavor in every bite.
-            </p>
-            <Button size={'large'} endIcon={<SendIcon/>} type={'submit'} className={'rounded-lg mt-2 mb-5 text-xs md:mt-2.5 md:ml-2.5 border-2 md:text-md hover:bg-amber-500 hover:cursor-pointer p-2'}>
-              Book
-            </Button>
-          </h1>
+    <section className="flex flex-col gap-6 md:flex-row items-center p-4 md:p-8 max-w-7xl mx-auto">
+      {/* Text Content Area */}
+      <div className="flex flex-col flex-1 gap-6 p-6 md:p-10 bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all duration-300 hover:shadow-[0_25px_60px_rgba(0,0,0,0.15)]">
+        <h1 className="text-left leading-tight">
+          <span className="text-amber-500 text-4xl md:text-7xl font-extrabold tracking-tight block">
+            Bold Flavors,<br/>Fresh Catches
+          </span>
+        </h1>
+        
+        <p className="text-gray-600 text-lg md:text-xl leading-relaxed max-w-lg">
+          Delight in our signature seafood boil, packed with the freshest shrimp, crab legs,
+          and clams, all seasoned to perfection. Native Cave Restaurant brings the ocean’s best to your table.
+        </p>
+        
+        <div className="flex justify-start">
+          <Button 
+            variant="contained"
+            size="large" 
+            endIcon={<SendIcon />} 
+            sx={{
+              backgroundColor: '#f59e0b', // amber-500
+              color: 'white',
+              px: 4,
+              py: 1.5,
+              borderRadius: '12px',
+              fontSize: { xs: '0.9rem', md: '1.1rem' },
+              fontWeight: 600,
+              textTransform: 'none',
+              boxShadow: '0 4px 15px rgba(245, 158, 11, 0.4)',
+              '&:hover': {
+                backgroundColor: '#d97706', // amber-600
+                boxShadow: '0 6px 20px rgba(217, 119, 6, 0.5)',
+              }
+            }}
+          >
+            Book Now
+          </Button>
         </div>
-        <div className={'flex flex-col justify-center shadow-2xl rounded-2xl md:flex-row md:justify-between md:flex-1/2'}>
-          <img srcSet={`${SeaFood} 1920w , ${SeaFood1} 600w`} className={'rounded-2xl w-full h-auto object-cover max-h-125'}
-               sizes="(max-width: 600px) 100vw, 1920px"
-               src={SeaFood}
-               alt="Delicious Gourmet Seafood"/>
-        </div>
-      </section>
-    </>
+      </div>
+
+      {/* Image Area */}
+      <div className="flex-1 w-full rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] group">
+        <img 
+          srcSet={`${SeaFood} 1920w, ${SeaFood1} 600w`} 
+          className="w-full h-full object-cover max-h-[500px] transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 600px) 100vw, 1920px"
+          src={SeaFood}
+          alt="Delicious Gourmet Seafood"
+        />
+      </div>
+    </section>
   )
 }
-export {HeroComponent}
+
+export { HeroComponent }

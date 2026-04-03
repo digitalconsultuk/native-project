@@ -24,7 +24,7 @@ const HeaderComponent = () => {
               <NavLink to="/about" className={({ isActive }) =>
                 isActive ? "text-blue-600 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
               }>About</NavLink>
-              <NavLink to="/" className={({ isActive }) =>
+              <NavLink to="/contact" className={({ isActive }) =>
                 isActive ? "text-blue-600 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
               }>Contact</NavLink>
             </div>
