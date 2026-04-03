@@ -1,7 +1,7 @@
 /**
  * Menu Component
  * */
-import {type FunctionComponent} from "react";
+import {type FunctionComponent, useReducer} from "react";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -10,38 +10,42 @@ import Button from '@mui/material/Button';
 import FoodImage1 from '../assets/food_2.png'
 import FoodImage2 from '../assets/image-bg-1.jpg'
 import FoodImage3 from '../assets/food_1.png'
-import * as React from "react";
 import {ModalComponent} from "./ModalComponent.tsx";
+import {type MenuState, ReducerFunction} from "../state/reducer.ts";
 
 const MenuComponent: FunctionComponent = () => {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
+  const initialState: MenuState = {
+    showMenu:false,
+    menu:'',
+  }
+  const [state, dispatch] = useReducer(ReducerFunction,initialState);
+  const showGrill_Menu_Function = () => dispatch({type: "showGrill"});
+  const showSalad_Menu_Function = () => dispatch({type: "showSalad"})
+  const closeMenu = () => dispatch({type:"closeMenu"})
+  
   const images = [
     {
       name: 'Grill',
       description: 'Charred over open flames and seasoned with our signature house rub. Smoky, tender, and served straight ' +
         'from the fire to your plate.',
       image: FoodImage1,
-      action: handleOpen
+      action: showGrill_Menu_Function
     },
     {
       name: 'Salad',
       description: 'Lizards are a widespread group of squamate reptiles, with over 6,000\n' +
         'species, ranging across all continents except Antarctica',
       image: FoodImage2,
-      action: handleOpen
+      action: showSalad_Menu_Function
     },
     {
       name: 'Seafood',
       description: 'Lizards are a widespread group of squamate reptiles, with over 6,000\n' +
         'species, ranging across all continents except Antarctica',
       image: FoodImage3,
-      action: handleOpen
+      action: showGrill_Menu_Function
     }
   ]
-
   return (
     <>
       <div className={'mt-5 mb-1 flex justify-center items-center'}>
@@ -71,7 +75,7 @@ const MenuComponent: FunctionComponent = () => {
           </div>
         </div>
       </section>
-      <ModalComponent open={open} onClose={handleClose}/>
+      <ModalComponent open={state.showMenu} onClose={closeMenu} menu={state.menu}/>
     </>
   )
 }

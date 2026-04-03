@@ -25,3 +25,6 @@ dist-ssr
 
 # ignore gitdoc.md
 gitdoc.md
+gemini-cli.md
+mcp-server.md
+.gemini
