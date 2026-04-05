@@ -19,13 +19,13 @@ const HeaderComponent = () => {
             </div>
             <div className={'flex flex-row gap-4'}>
               <NavLink to="/home" className={({ isActive }) =>
-                isActive ? "text-blue-600 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
+                isActive ? "text-amber-500 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
               }>Home</NavLink>
               <NavLink to="/about" className={({ isActive }) =>
-                isActive ? "text-blue-600 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
+                isActive ? "text-amber-500 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
               }>About</NavLink>
               <NavLink to="/contact" className={({ isActive }) =>
-                isActive ? "text-blue-600 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
+                isActive ? "text-amber-500 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
               }>Contact</NavLink>
             </div>
             <div className={'flex flex-row'}>

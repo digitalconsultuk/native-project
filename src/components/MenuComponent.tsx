@@ -44,12 +44,33 @@ const MenuComponent: FunctionComponent = () => {
         'species, ranging across all continents except Antarctica',
       image: FoodImage3,
       action: showGrill_Menu_Function
+    },
+    {
+      name: 'Seafood',
+      description: 'Lizards are a widespread group of squamate reptiles, with over 6,000\n' +
+        'species, ranging across all continents except Antarctica',
+      image: FoodImage3,
+      action: showGrill_Menu_Function
+    },
+    {
+      name: 'Seafood',
+      description: 'Lizards are a widespread group of squamate reptiles, with over 6,000\n' +
+        'species, ranging across all continents except Antarctica',
+      image: FoodImage3,
+      action: showGrill_Menu_Function
+    },
+    {
+      name: 'Seafood',
+      description: 'Lizards are a widespread group of squamate reptiles, with over 6,000\n' +
+        'species, ranging across all continents except Antarctica',
+      image: FoodImage3,
+      action: showGrill_Menu_Function
     }
   ]
   return (
     <>
-      <div className={'mt-5 mb-1 flex justify-center items-center'}>
-        <h1 className={'text-center font-mono text-3xl'}> Menu Section </h1>
+      <div className={'mt-5 mb-1 flex justify-center items-center scroll-mt-24'} id={'menu'}>
+        <h1 className={'text-center font-mono text-4xl font-bold'}> Menu </h1>
       </div>
       <section className={'flex flex-row justify-center items-center'}>
         <div className="max-w-7xl mx-auto p-6 bg-amber-200 rounded-3xl mb-10 shadow-2xl">
@@ -57,18 +78,18 @@ const MenuComponent: FunctionComponent = () => {
             {images.map((data, index) => (
               <Card sx={{ maxWidth: 300 }} className={'rounded-2xl shadow-2xl mt-2 mb-2'} key={index}>
                 <CardMedia
-                  sx={{ height: 150 }}
+                  sx={{ height: 170 }}
                   image={data.image}
                   title={data.name}
                 />
                 <CardContent>
-                  <h2 className={'text-3xl mt-0.5 font-mono'}>{data.name}</h2>
-                  <p className={''}>
+                  <h2 className={'text-2xl md:text-2xl mt-0.5 font-mono'}>{data.name}</h2>
+                  <p className={'p-0.5 text-sm md:text-md'}>
                     {data.description}
                   </p>
                 </CardContent>
                 <CardActions>
-                  <Button size="medium" className={'-mt-5'} onClick={data.action}>View</Button>
+                  <Button size="medium" className={'-mt-5 hover:rounded-2xl'} onClick={data.action}>View</Button>
                 </CardActions>
               </Card>
             ))}
