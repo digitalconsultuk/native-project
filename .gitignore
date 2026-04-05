@@ -28,3 +28,4 @@ gitdoc.md
 gemini-cli.md
 mcp-server.md
 .gemini
+.env

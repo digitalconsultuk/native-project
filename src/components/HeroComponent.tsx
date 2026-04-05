@@ -2,10 +2,11 @@
 /**
  * Hero component section
  */
-import SeaFood from '../assets/seafood.png'
+import SeaPic from '../assets/img.png'
 import SeaFood1 from '../assets/seafood_2.png'
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
+import { Link } from 'react-router';
 
 const HeroComponent = () => {
   return (
@@ -25,6 +26,8 @@ const HeroComponent = () => {
         
         <div className="flex justify-start">
           <Button 
+            component={Link}
+            to="/booking"
             variant="contained"
             size="large" 
             endIcon={<SendIcon />} 
@@ -50,17 +53,15 @@ const HeroComponent = () => {
       </div>
 
       {/* Image Area */}
-      <div className="flex-1 w-full rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] group">
-        <img 
-          srcSet={`${SeaFood} 1920w, ${SeaFood1} 600w`} 
-          className="w-full h-full object-cover max-h-[500px] transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width: 600px) 100vw, 1920px"
-          src={SeaFood}
+      <div className="flex-1 w-full rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] group bg-gray-50/30 flex items-center justify-center">
+        <img
+          srcSet={`${SeaPic} 1920w, ${SeaFood1} 600w`}
+          className="w-full h-auto md:h-113.25 object-contain md:object-fill transition-transform duration-500 group-hover:scale-105"
+          src={SeaPic}
           alt="Delicious Gourmet Seafood"
         />
       </div>
     </section>
   )
 }
-
 export { HeroComponent }
