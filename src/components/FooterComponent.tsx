@@ -11,7 +11,7 @@ const FooterComponent: React.FunctionComponent = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-50 border border-gray-200 pt-16 pb-8 px-6 font-mono mt-6">
+    <footer className="bg-gray-50 border border-gray-200 pt-16 pb-8 px-6 font-mono mt-0">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16 justify-items-center">
           <div className="flex flex-col items-center text-center">
@@ -30,7 +30,7 @@ const FooterComponent: React.FunctionComponent = () => {
                 <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition-all hover:pl-2">Contact</Link>
               </li>
               <li>
-                <Link to="#menu-section" className="text-gray-600 hover:text-blue-600 transition-all hover:pl-2">Our Menu</Link>
+                <Link to="/home#menusection" className="text-gray-600 hover:text-blue-600 transition-all hover:pl-2">Our Menu</Link>
               </li>
             </ul>
           </div>

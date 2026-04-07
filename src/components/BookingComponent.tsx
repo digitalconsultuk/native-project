@@ -18,6 +18,26 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { Dayjs } from 'dayjs';
+import PhoneInput from "react-phone-number-input/input";
+
+const CustomPhoneInput = React.forwardRef((props: any, ref) => {
+  const { onChange, name, ...other } = props;
+  return (
+    <PhoneInput
+      {...other}
+      ref={ref}
+      defaultCountry="GB"
+      onChange={(value) =>
+        onChange({
+          target: {
+            name: name,
+            value: value || '',
+          },
+        })
+      }
+    />
+  );
+});
 
 /**
  * BookingComponent - A restaurant reservation form using Tailwind CSS for layout
@@ -34,8 +54,11 @@ const BookingComponent = () => {
     specialRequest: ''
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: any) => {
+    if (!e || !e.target) return;
     const { name, value } = e.target;
+    if (!name) return;
+    
     setBookingData((prev) => ({
       ...prev,
       [name]: value
@@ -56,7 +79,7 @@ const BookingComponent = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formattedDate = bookingData.date ? bookingData.date.format('YYYY-MM-DD') : '';
     const formattedTime = bookingData.time ? bookingData.time.format('HH:mm') : '';
@@ -161,9 +184,9 @@ const BookingComponent = () => {
                   onChange={handleChange}
                   required
                   placeholder="019XXXXXXXX"
-                  pattern={''}
                   slotProps={{
                     input: {
+                      inputComponent: CustomPhoneInput as any,
                       startAdornment: (
                         <InputAdornment position="start">
                           <PhoneIcon className="text-amber-500" />
@@ -230,12 +253,14 @@ const BookingComponent = () => {
                     textField: {
                       fullWidth: true,
                       required: true,
-                      InputProps: {
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <CalendarTodayIcon className="text-amber-500" />
-                          </InputAdornment>
-                        ),
+                      slotProps: {
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <CalendarTodayIcon className="text-amber-500" />
+                            </InputAdornment>
+                          ),
+                        },
                       },
                       sx: { 
                         '& .MuiOutlinedInput-root': { 
@@ -260,12 +285,14 @@ const BookingComponent = () => {
                     textField: {
                       fullWidth: true,
                       required: true,
-                      InputProps: {
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <AccessTimeIcon className="text-amber-500" />
-                          </InputAdornment>
-                        ),
+                      slotProps: {
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AccessTimeIcon className="text-amber-500" />
+                            </InputAdornment>
+                          ),
+                        },
                       },
                       sx: { 
                         '& .MuiOutlinedInput-root': { 
