@@ -29,3 +29,5 @@ gemini-cli.md
 mcp-server.md
 .gemini
 .env
+reproduce_issue.js
+test_regex.js
