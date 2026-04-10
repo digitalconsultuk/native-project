@@ -15,7 +15,7 @@ This project is a React-based web application for the **Native Cave Restaurant**
 ## 📂 Project Structure
 
 - `src/assets/`: Static images and icons.
-- `src/components/`: Reusable UI components (e.g., `HeaderComponent`, `HeroComponent`, `MenuComponent`).
+- `src/components/`: Reusable UI components (e.g., `HeaderComponent`, `HeroFeature`, `MenuGrid`).
 - `src/pages/`: Top-level page views (e.g., `HomePage`).
 - `src/state/`: State management logic and reducers.
 - `src/utils/`: Utility functions and helpers.
@@ -39,4 +39,4 @@ This project is a React-based web application for the **Native Cave Restaurant**
 
 - Redesigning the landing page (`HomePage.tsx`).
 - Implementing an interactive menu with modal details.
-- Developing a booking system integration (CTA button present in `HeroComponent`).
+- Developing a booking system integration (CTA button present in `HeroFeature`).

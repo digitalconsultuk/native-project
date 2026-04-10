@@ -40,10 +40,10 @@ const CustomPhoneInput = React.forwardRef((props: any, ref) => {
 });
 
 /**
- * BookingComponent - A restaurant reservation form using Tailwind CSS for layout
+ * BookingForm - A restaurant reservation form using Tailwind CSS for layout
  * and MUI for interactive form components.
  */
-const BookingComponent = () => {
+const BookingForm = () => {
   const [bookingData, setBookingData] = useState({
     name: '',
     email: '',
@@ -369,4 +369,4 @@ const BookingComponent = () => {
   );
 };
 
-export { BookingComponent };
+export { BookingForm };

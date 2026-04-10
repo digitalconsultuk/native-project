@@ -1,10 +1,10 @@
-//import  * as React from 'react';
-import { ContactComponent } from '../components/ContactComponent';
+
+import { ContactForm } from '@features/contact/ContactForm.tsx';
 
 const ContactPage = () => {
   return (
     <main className={'mt-10'}>
-      <ContactComponent />
+      <ContactForm />
     </main>
   );
 };

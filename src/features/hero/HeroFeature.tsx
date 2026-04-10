@@ -2,13 +2,13 @@
 /**
  * Hero component section
  */
-import SeaPic from '../assets/img.png'
-import SeaFood1 from '../assets/seafood_2.png'
+import SeaPic from '@assets/images/img.png'
+import SeaFood1 from '@assets/images/seafood_2.png'
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import { Link } from 'react-router';
 
-const HeroComponent = () => {
+const HeroFeature = () => {
   return (
     <section className="flex flex-col gap-6 md:flex-row items-center p-4 md:p-8 max-w-7xl mx-auto">
       {/* Text Content Area */}
@@ -64,4 +64,4 @@ const HeroComponent = () => {
     </section>
   )
 }
-export { HeroComponent }
+export { HeroFeature }
