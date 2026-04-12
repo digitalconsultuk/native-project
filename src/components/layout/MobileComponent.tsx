@@ -4,7 +4,7 @@ import {
   Drawer, List, ListItem, ListItemText, Box
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import native_cave from "../../assets/images/native_cave.png";
+import native_cave from "@assets/images/native_cave.png";
 import {Link} from "react-router";
 
 export default function MobileNavigation() {
@@ -51,30 +51,16 @@ export default function MobileNavigation() {
                  alt={'native_logo'}/>
           </div>
           <List className={'-mt-2'}>
-            {menuItems.map((text) => (
-              text.startsWith('Menu') &&
-              <ListItem key={text}>
-                <Link to={'/#menusection'}>
-                  <ListItemText primary={text} />
-                </Link>
-              </ListItem>
-            ))}
-            {menuItems.map((text) => (
-              !text.startsWith('Menu') && !text.startsWith('Services') &&
-              <ListItem key={text}>
-                <Link to={'/contact'}>
-                  <ListItemText primary={text} />
-                </Link>
-              </ListItem>
-            ))}
-            {menuItems.map((text) => (
-              text.startsWith('Services') &&
-              <ListItem key={text}>
-                <Link to={'/#service'}>
-                  <ListItemText primary={text} />
-                </Link>
-              </ListItem>
-            ))}
+            {menuItems.map((text) => {
+                const path = text === 'Menu' ? '/#menusection' : text === 'Services' ? '/#service' : text === 'Home' ? '/home' : '/contact';
+                return(
+                  <ListItem key={text}>
+                    <Link to={path}>
+                      <ListItemText primary={text} />
+                    </Link>
+                  </ListItem>
+                );
+            })}
           </List>
         </Box>
       </Drawer>

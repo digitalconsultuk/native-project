@@ -20,11 +20,22 @@ export default defineConfig({
       '@utils': path.resolve(__dirname, './src/utils'),
     },
   },
+  
   build:{
-    rolldownOptions: {
+    chunkSizeWarningLimit:200,
+    rolldownOptions:{
       output: {
-        codeSplitting: false
-      }
+        codeSplitting: {
+          minSize: 200,
+          maxSize:500,
+          groups: [
+            {
+              name: 'vendor',
+              test: /node_modules/,
+            },
+          ],
+        },
+      },
     }
   }
 })
