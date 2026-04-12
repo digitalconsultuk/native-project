@@ -1,4 +1,4 @@
-name: pnpm Example Workflow
+name: Project CI/CD steps [install,build,test,deploy]
 on:
   push:
 
