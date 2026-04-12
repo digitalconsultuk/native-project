@@ -2,9 +2,9 @@
 import {Route, Routes, Navigate, useLocation} from "react-router";
 import {HomePage} from "./pages/HomePage";
 import {BookingPage} from "./pages/BookingPage";
-import {HeaderComponent} from "./components/layout/HeaderComponent.tsx";
-import MobileNavigation from "./components/layout/MobileComponent.tsx";
-import {FooterComponent} from "./components/layout/FooterComponent.tsx";
+import {HeaderComponent} from "@components/layout/HeaderComponent";
+import MobileNavigation from "@components/layout/MobileComponent";
+import {FooterComponent} from "@components/layout/FooterComponent";
 import {useEffect} from "react";
 import {ContactPage} from "./pages/ContactPage.tsx";
 //import Breadcrumbs from '@mui/material/Breadcrumbs';
