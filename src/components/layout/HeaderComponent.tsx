@@ -1,7 +1,7 @@
 
-import '../App.css'
+import '../../styles/App.css'
 import {NavLink, Link} from "react-router";
-import native_cave from '../assets/native_cave.png'
+import native_cave from '../../assets/images/native_cave.png'
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 
 const HeaderComponent = () => {
@@ -21,9 +21,9 @@ const HeaderComponent = () => {
               <NavLink to="/home" className={({ isActive }) =>
                 isActive ? "text-amber-500 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
               }>Home</NavLink>
-              <NavLink to="/about" className={({ isActive }) =>
+              <NavLink to="/#menusection" className={({ isActive }) =>
                 isActive ? "text-amber-500 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
-              }>About</NavLink>
+              }>Menu</NavLink>
               <NavLink to="/contact" className={({ isActive }) =>
                 isActive ? "text-amber-500 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
               }>Contact</NavLink>

@@ -1,0 +1,13 @@
+@import "tailwindcss";
+html,
+body,
+:root {
+    margin: 0;
+    padding: 0;
+    @media (max-width: 767px) {
+        :root{
+            height: 100dvh;
+        }
+    } /* Use dynamic viewport height */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}

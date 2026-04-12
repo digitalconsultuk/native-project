@@ -1,76 +1,22 @@
-# React + TypeScript + Vite
+# Native Cave Restaurant - Website Redesign
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a modern, high-performance redesign of the **Native Cave Restaurant** website and booking system. It is built using a professional-grade tech stack (React 19, TypeScript, Vite, and Tailwind CSS v4) to ensure a fast, responsive, and visually engaging experience for customers.
 
-Currently, two official plugins are available:
+### Project Overview
+The primary goal is to provide Native Cave Restaurant with:
+*   **Modern Branding:** A fresh, sleek landing page that highlights the restaurant's unique atmosphere and seafood offerings.
+*   **Interactive Menu:** A dynamic digital menu for easy browsing.
+*   **Integrated Booking:** A streamlined reservation system to improve customer conversion and management.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Key Commands
+To run or preview the project locally, use these commands (assuming `pnpm` is installed):
 
-## React Compiler
+| Command | Purpose |
+| :--- | :--- |
+| **`pnpm dev`** | **Start Development Server:** Launches the site in a local environment for real-time reviewing of changes. |
+| **`pnpm build`** | **Production Build:** Compiles the code into optimized, static files ready for deployment. |
+| **`pnpm preview`** | **Local Production Preview:** Runs the built version of the site locally to verify final performance. |
+| **`pnpm lint`** | **Quality Check:** Scans the codebase for potential errors or style inconsistencies. |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-# native-project
-Project to re-design Native Cave Restaurant website and booking system.
+---
+*Note: This project uses **Vite** for near-instant updates during development and **Material UI v7** for polished interactive components.*

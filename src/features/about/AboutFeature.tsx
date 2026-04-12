@@ -1,13 +1,13 @@
-import FoodBg from '../assets/sea.png';
+import FoodBg from '@assets/images/sea.png';
 import { Button } from '@mui/material';
 import { Link } from 'react-router';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 /**
- * AboutComponent - A modern, minimal "About Us" section 
+ * AboutFeature - A modern, minimal "About Us" section
  * featuring the Native Cave story with a clean layout.
  */
-const AboutComponent = () => {
+const AboutFeature = () => {
   return (
     <section className="py-16 md:py-24 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
@@ -86,4 +86,4 @@ const AboutComponent = () => {
   );
 };
 
-export { AboutComponent };
+export { AboutFeature };

@@ -4,12 +4,12 @@ import {
   Drawer, List, ListItem, ListItemText, Box
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import native_cave from "../assets/native_cave.png";
+import native_cave from "@assets/images/native_cave.png";
 import {Link} from "react-router";
 
 export default function MobileNavigation() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const menuItems = ['Home', 'About', 'Services', 'Contact'];
+  const menuItems = ['Home', 'Menu', 'Services', 'Contact']
   return (
     <>
       <AppBar className="md:hidden bg-white fixed mb-5 z-100">
@@ -51,13 +51,16 @@ export default function MobileNavigation() {
                  alt={'native_logo'}/>
           </div>
           <List className={'-mt-2'}>
-            {menuItems.map((text) => (
-              <ListItem key={text}>
-                <Link to={'/'+text}>
-                  <ListItemText primary={text} />
-                </Link>
-              </ListItem>
-            ))}
+            {menuItems.map((text) => {
+                const path = text === 'Menu' ? '/#menusection' : text === 'Services' ? '/#service' : text === 'Home' ? '/home' : '/contact';
+                return(
+                  <ListItem key={text}>
+                    <Link to={path}>
+                      <ListItemText primary={text} />
+                    </Link>
+                  </ListItem>
+                );
+            })}
           </List>
         </Box>
       </Drawer>

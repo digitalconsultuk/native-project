@@ -19,7 +19,7 @@ interface ContactPageForm {
   isValid: boolean
 }
 
-const ContactComponent = () => {
+const ContactForm = () => {
   //^[a-zA-Z0–9._%+-]+@[a-zA-Z0–9.-]+\.[a-zA-Z]{2,}$ --> regex for email
   const [formModel, setFormModel] = React.useState<ContactPageForm>({
     name: '',
@@ -264,4 +264,4 @@ const ContactComponent = () => {
     </section>
   );
 };
-export { ContactComponent };
+export { ContactForm };

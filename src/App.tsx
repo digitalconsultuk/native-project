@@ -2,9 +2,9 @@
 import {Route, Routes, Navigate, useLocation} from "react-router";
 import {HomePage} from "./pages/HomePage";
 import {BookingPage} from "./pages/BookingPage";
-import {HeaderComponent} from "./components/HeaderComponent";
-import MobileNavigation from "./components/MobileComponent";
-import {FooterComponent} from "./components/FooterComponent";
+import {HeaderComponent} from "@components/layout/HeaderComponent";
+import MobileNavigation from "@components/layout/MobileComponent";
+import {FooterComponent} from "@components/layout/FooterComponent";
 import {useEffect} from "react";
 import {ContactPage} from "./pages/ContactPage.tsx";
 //import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -16,8 +16,9 @@ function App() {
       if (location.hash) {
          setTimeout(() => {
             const element = document.getElementById(location.hash.slice(1));
+            //const alignToTop: boolean = true;
             if (element) {
-               element.scrollIntoView({ behavior: 'smooth' });
+               element.scrollIntoView({behavior: "smooth", block:"start"});
             }
          }, 100);
       } else {

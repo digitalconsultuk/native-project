@@ -35,7 +35,7 @@ const FooterComponent: React.FunctionComponent = () => {
             </ul>
           </div>
 
-          <div className="flex flex-col items-center text-center">
+          <div className="flex flex-col items-center text-center" id={'service'}>
             <h3 className="text-xl font-bold mb-6 text-black relative inline-block">
               Services
               <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-25 h-1 bg-amber-500 mt-1 block"></span>

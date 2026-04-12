@@ -31,3 +31,5 @@ mcp-server.md
 .env
 reproduce_issue.js
 test_regex.js
+config.md
+structure.md

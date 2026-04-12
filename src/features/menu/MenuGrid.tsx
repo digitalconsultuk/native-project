@@ -7,13 +7,13 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
-import FoodImage1 from '../assets/food_2.png'
-import FoodImage2 from '../assets/image-bg-1.jpg'
-import FoodImage3 from '../assets/food_1.png'
-import {ModalComponent} from "./ModalComponent.tsx";
-import {type MenuState, ReducerFunction} from "../state/reducer.ts";
+import FoodImage1 from '@assets/images/food_2.png'
+import FoodImage2 from '@assets/images/image-bg-1.jpg'
+import FoodImage3 from '@assets/images/food_1.png'
+import {ModalComponent} from "@components/layout/ModalComponent";
+import {type MenuState, ReducerFunction} from "@state/reducer";
 
-const MenuComponent: FunctionComponent = () => {
+const MenuGrid: FunctionComponent = () => {
   const initialState: MenuState = {
     showMenu:false,
     menu:'',
@@ -100,4 +100,4 @@ const MenuComponent: FunctionComponent = () => {
     </>
   )
 }
-export {MenuComponent};
+export {MenuGrid};
