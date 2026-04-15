@@ -33,3 +33,5 @@ reproduce_issue.js
 test_regex.js
 config.md
 structure.md
+.gemini/
+gha-creds-*.json

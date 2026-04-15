@@ -17,8 +17,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs,{ Dayjs } from 'dayjs';
 import PhoneInput from "react-phone-number-input/input";
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
 const CustomPhoneInput = React.forwardRef((props: any, ref) => {
   const { onChange, name, ...other } = props;
@@ -53,12 +55,14 @@ const BookingForm = () => {
     guests: '2',
     specialRequest: ''
   });
-
-  const handleChange = (e: any) => {
+  
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e || !e.target) return;
     const { name, value } = e.target;
     if (!name) return;
-    
     setBookingData((prev) => ({
       ...prev,
       [name]: value
@@ -248,7 +252,8 @@ const BookingForm = () => {
                   label="Date"
                   value={bookingData.date}
                   onChange={handleDateChange}
-                  minDate={dayjs()}
+                  minDate={dayjs.utc(dayjs())}
+                  timezone={'Europe/London'}
                   slotProps={{
                     textField: {
                       fullWidth: true,
