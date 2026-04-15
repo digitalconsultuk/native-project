@@ -1,6 +1,11 @@
 name: Project CI/CD steps [install,build,test,deploy]
 on:
   push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - 'feat/**'
 
 jobs:
   build:
@@ -9,7 +14,8 @@ jobs:
       matrix:
         node-version: [20]
     steps:
-      - uses: actions/checkout@v4
+      - name: checkout repository
+        uses: actions/checkout@v4
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
