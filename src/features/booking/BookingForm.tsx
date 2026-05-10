@@ -104,7 +104,7 @@ const BookingForm = () => {
 
   useEffect(() => {
     cachedCall();
-  }, [cachedCall, bookingData.date]);
+  }, [cachedCall]);
 
   const shouldDisableDate = (day: Dayjs) => {
     const dateStr = day.tz('Europe/London').startOf('day').format('YYYY-MM-DD');
