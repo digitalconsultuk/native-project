@@ -1,3 +1,5 @@
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/0d12e458-b51b-4db7-9a75-0d2b105a8638/deploy-status?branch=master)](https://app.netlify.com/projects/native-cave/deploys)
 # Native Cave Restaurant - Website Redesign
 
 This project is a modern, high-performance redesign of the **Native Cave Restaurant** website and booking system. It is built using a professional-grade tech stack (React 19, TypeScript, Vite, and Tailwind CSS v4) to ensure a fast, responsive, and visually engaging experience for customers.
