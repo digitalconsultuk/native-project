@@ -1,5 +1,5 @@
 
-import React, {useEffect, useState, startTransition, useCallback, useMemo} from 'react';
+import React, {useEffect, useState, useCallback, useMemo} from 'react';
 import { 
   Button, 
   TextField, 
@@ -69,8 +69,11 @@ const BookingForm = () => {
   const availableDates = useMemo(() => {
     const dates = new Set<string>();
     slots.forEach(s => {
-      const dateStr = dayjs(s.booked_slot).tz('Europe/London').startOf('day').format('YYYY-MM-DD');
-      dates.add(dateStr);
+      // Parse the custom date format: "Sat Jul 18 2026 03:25:13 GMT+0100 (British Summer Time)"
+      const d = dayjs(s.booked_slot);
+      if (d.isValid()) {
+        dates.add(d.format('YYYY-MM-DD'));
+      }
     });
     return dates;
   }, [slots]);
@@ -78,14 +81,18 @@ const BookingForm = () => {
   const availableTimes = useMemo(() => {
     const timesMap = new Map<string, Set<string>>();
     slots.forEach(s => {
-      const slotDate = dayjs(s.booked_slot).tz('Europe/London');
-      const dateKey = slotDate.startOf('day').format('YYYY-MM-DD');
-      const timeKey = slotDate.format('HH:mm');
-      
-      if (!timesMap.has(dateKey)) {
-        timesMap.set(dateKey, new Set());
+      const d = dayjs(s.booked_slot);
+      if (d.isValid()) {
+        const dateKey = d.format('YYYY-MM-DD');
+        const timeKey = d.format('HH:mm');
+        
+        let set = timesMap.get(dateKey);
+        if (!set) {
+          set = new Set();
+          timesMap.set(dateKey, set);
+        }
+        set.add(timeKey);
       }
-      timesMap.get(dateKey)!.add(timeKey);
     });
     return timesMap;
   }, [slots]);
@@ -93,10 +100,9 @@ const BookingForm = () => {
   const cachedCall = useCallback(async () => {
     try {
       const response = await OpenTableService.getSlotsAvailability();
+      if (!response) return;
       const parsedAPIData = JSON.parse(response);
-      startTransition(() => {
-        setSlots(parsedAPIData);
-      });
+      setSlots(parsedAPIData);
     } catch (e) {
       console.error("Failed to fetch slots", e);
     }
@@ -104,22 +110,22 @@ const BookingForm = () => {
 
   useEffect(() => {
     cachedCall();
-  }, [cachedCall, bookingData.date]);
+  }, [cachedCall]);
 
   const shouldDisableDate = (day: Dayjs) => {
-    const dateStr = day.tz('Europe/London').startOf('day').format('YYYY-MM-DD');
+    const dateStr = day.format('YYYY-MM-DD');
     return !availableDates.has(dateStr);
   };
 
   const shouldDisableTime = (value: Dayjs, view: TimeView) => {
     if (!bookingData.date) return false;
     
-    const dateKey = bookingData.date.tz('Europe/London').startOf('day').format('YYYY-MM-DD');
+    const dateKey = bookingData.date.format('YYYY-MM-DD');
     const availableSet = availableTimes.get(dateKey);
     
     if (!availableSet) return true;
 
-    const timeInLondon = value.tz('Europe/London');
+    const timeInLondon = value;
     
     if (view === 'hours') {
       const hourStr = timeInLondon.format('HH:');
@@ -332,7 +338,7 @@ const BookingForm = () => {
                   value={bookingData.date}
                   onChange={handleDateChange}
                   shouldDisableDate={shouldDisableDate}
-                  minDate={dayjs().tz('Europe/London').startOf('day')}
+                  minDate={dayjs().startOf('day')}
                   timezone={'Europe/London'}
                   slotProps={{
                     textField: {
@@ -369,8 +375,8 @@ const BookingForm = () => {
                   value={bookingData.time}
                   onChange={handleTimeChange}
                   timezone={'Europe/London'}
-                  minTime={dayjs().tz('Europe/London').set('hour', 1).startOf('hour')}
-                  maxTime={dayjs().tz('Europe/London').set('hour', 23).startOf('hour')}
+                  minTime={dayjs().set('hour', 1).startOf('hour')}
+                  maxTime={dayjs().set('hour', 23).startOf('hour')}
                   disableIgnoringDatePartForTimeValidation = {false}
                   skipDisabled
                   shouldDisableTime={shouldDisableTime}

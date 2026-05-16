@@ -15,14 +15,16 @@ export class OpenTableService {
   /**@doc get slot availability for booking*/
   static getSlotsAvailability = async (): Promise<any> => {
     /** cache miss on the first attempt.* cache hit on the second attempt.**/
-    if(!localStorage.getItem('data')) {
-      const data = await axios.get('/.netlify/functions/SlotAvailability', {
-        headers: {'Content-Type': 'application/json'},
-        method: 'GET',
+    const cachedData = localStorage.getItem("data");
+    if(!cachedData) {
+      const  data  = await axios.get('/.netlify/functions/SlotAvailability', {
+        headers: {'Content-Type': 'application/json'}
       });
-      localStorage.setItem('data',JSON.stringify(data.data));
+      const dataStr = JSON.stringify(data.data);
+      localStorage.setItem('data', dataStr);
+      return dataStr;
     }
-    return localStorage.getItem('data');
+    return cachedData;
   }
   /** @doc book reservation function **/
 }
