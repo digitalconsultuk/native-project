@@ -13,6 +13,7 @@ export interface BookingResponse {
 }
 export class OpenTableService {
   /**@doc get slot availability for booking*/
+    // TODO: temp cache logic
   static getSlotsAvailability = async (): Promise<any> => {
     /** cache miss on the first attempt.* cache hit on the second attempt.**/
     const cachedData = localStorage.getItem("data");
@@ -26,5 +27,4 @@ export class OpenTableService {
     }
     return cachedData;
   }
-  /** @doc book reservation function **/
 }

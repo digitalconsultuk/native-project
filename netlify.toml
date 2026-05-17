@@ -1,6 +1,6 @@
 # Build settings
 [build]
-command = "npm run build"
+command = "pnpm build"
 functions = "netlify/functions"
 publish = "dist"
 
