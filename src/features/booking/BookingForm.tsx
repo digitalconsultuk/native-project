@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, {useEffect, useState, useCallback, useMemo} from 'react';
 import { 
   Button, 
   TextField, 
@@ -21,7 +21,11 @@ import dayjs,{ Dayjs } from 'dayjs';
 import PhoneInput from "react-phone-number-input/input";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import type {TimeView} from "@mui/x-date-pickers";
+import {type BookingResponse, OpenTableService} from "../../services/OpenTable_Service.ts";
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
 const CustomPhoneInput = React.forwardRef((props: any, ref) => {
   const { onChange, name, ...other } = props;
   return (
@@ -55,10 +59,90 @@ const BookingForm = () => {
     guests: '2',
     specialRequest: ''
   });
-  
-  dayjs.extend(utc);
-  dayjs.extend(timezone);
-  
+  // time interval value
+  const timeValue = {
+    hours: 1,
+    minutes: 1
+  }
+  const [slots, setSlots] = useState<BookingResponse[]>([]);
+
+  const availableDates = useMemo(() => {
+    const dates = new Set<string>();
+    slots.forEach(s => {
+      // Parse the custom date format: "Sat Jul 18 2026 03:25:13 GMT+0100 (British Summer Time)"
+      const d = dayjs(s.booked_slot);
+      if (d.isValid()) {
+        dates.add(d.format('YYYY-MM-DD'));
+      }
+    });
+    return dates;
+  }, [slots]);
+
+  const availableTimes = useMemo(() => {
+    const timesMap = new Map<string, Set<string>>();
+    slots.forEach(s => {
+      const d = dayjs(s.booked_slot);
+      if (d.isValid()) {
+        const dateKey = d.format('YYYY-MM-DD');
+        const timeKey = d.format('HH:mm');
+        
+        let set = timesMap.get(dateKey);
+        if (!set) {
+          set = new Set();
+          timesMap.set(dateKey, set);
+        }
+        set.add(timeKey);
+      }
+    });
+    return timesMap;
+  }, [slots]);
+
+  const cachedCall = useCallback(async () => {
+    try {
+      const response = await OpenTableService.getSlotsAvailability();
+      if (!response) return;
+      const parsedAPIData = JSON.parse(response);
+      setSlots(parsedAPIData);
+    } catch (e) {
+      console.error("Failed to fetch slots", e);
+    }
+  }, []);
+
+  useEffect(() => {
+    cachedCall();
+  }, [cachedCall]);
+
+  const shouldDisableDate = (day: Dayjs) => {
+    const dateStr = day.format('YYYY-MM-DD');
+    return !availableDates.has(dateStr);
+  };
+
+  const shouldDisableTime = (value: Dayjs, view: TimeView) => {
+    if (!bookingData.date) return false;
+    
+    const dateKey = bookingData.date.format('YYYY-MM-DD');
+    const availableSet = availableTimes.get(dateKey);
+    
+    if (!availableSet) return true;
+
+    const timeInLondon = value;
+    
+    if (view === 'hours') {
+      const hourStr = timeInLondon.format('HH:');
+      // Check if any available time starts with this hour
+      for (const time of availableSet) {
+        if (time.startsWith(hourStr)) return false;
+      }
+      return true;
+    }
+    
+    if (view === 'minutes') {
+      const timeStr = timeInLondon.format('HH:mm');
+      return !availableSet.has(timeStr);
+    }
+    return false;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e || !e.target) return;
     const { name, value } = e.target;
@@ -83,7 +167,7 @@ const BookingForm = () => {
     }));
   };
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formattedDate = bookingData.date ? bookingData.date.format('YYYY-MM-DD') : '';
     const formattedTime = bookingData.time ? bookingData.time.format('HH:mm') : '';
@@ -101,6 +185,7 @@ const BookingForm = () => {
       specialRequest: ''
     });
   };
+  
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <section className=" mt-9 md:-mt-5 py-5 md:py-12 bg-gray-50">
@@ -252,7 +337,8 @@ const BookingForm = () => {
                   label="Date"
                   value={bookingData.date}
                   onChange={handleDateChange}
-                  minDate={dayjs.utc(dayjs())}
+                  shouldDisableDate={shouldDisableDate}
+                  minDate={dayjs().startOf('day')}
                   timezone={'Europe/London'}
                   slotProps={{
                     textField: {
@@ -284,8 +370,17 @@ const BookingForm = () => {
               <div className="col-span-1">
                 <TimePicker
                   label="Time"
+                  views={['hours', 'minutes']}
+                  timeSteps={timeValue}
                   value={bookingData.time}
                   onChange={handleTimeChange}
+                  timezone={'Europe/London'}
+                  minTime={dayjs().set('hour', 1).startOf('hour')}
+                  maxTime={dayjs().set('hour', 23).startOf('hour')}
+                  disableIgnoringDatePartForTimeValidation = {false}
+                  skipDisabled
+                  shouldDisableTime={shouldDisableTime}
+                  ampm={false}
                   slotProps={{
                     textField: {
                       fullWidth: true,

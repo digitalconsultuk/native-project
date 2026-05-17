@@ -5,6 +5,9 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
+    "module": "es2022",
+    "moduleResolution": "nodenext",
+    "target": "es2022",
     "baseUrl": ".",
     "paths": {
       "@components/*": ["src/components/*"],
@@ -12,7 +15,8 @@
       "@assets/*": ["src/assets/*"],
       "@state/*": ["src/state/*"],
       "@styles/*": ["src/styles/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@services/*": ["src/services/*"]
     }
   }
 }

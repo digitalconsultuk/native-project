@@ -1,0 +1,56 @@
+# Build settings
+[build]
+command = "pnpm build"
+functions = "netlify/functions"
+publish = "dist"
+
+# Functions configuration
+[functions]
+directory = "netlify/functions"
+node_bundler = "esbuild"
+external_node_modules = ["aws-sdk"]
+
+# Environment variables (development)
+[env.development]
+environment = { API_URL = "http://localhost:1570", NODE_ENV = "development" }
+
+# Environment variables (production)
+[env.production]
+environment = { API_URL = "https://api.example.com", NODE_ENV = "production" }
+
+# Redirects
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+
+# Headers
+[[headers]]
+for = "/api/*"
+[headers.values]
+"Access-Control-Allow-Origin" = "*"
+"Access-Control-Allow-Methods" = "GET, POST, PUT, DELETE, OPTIONS"
+"Content-Type" = "application/json"
+
+# Scheduled functions (cron jobs)
+[[scheduled]]
+function = "cleanup"
+cron = "0 0 * * *"  # Daily at midnight
+
+[[scheduled]]
+function = "sync-data"
+cron = "0 */6 * * *"  # Every 6 hours
+
+[dev]
+command = "pnpm dev"
+port = 1571
+targetPort = 1570       # ← Add this line (Vite's default port)
+functionsPort = 9000
+autoLaunch = true
+framework = "vite"
