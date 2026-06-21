@@ -1,14 +1,17 @@
 
 import { Handler } from '@netlify/functions';
+
+declare const process: any;
+declare const Netlify: any;
 import axios from 'axios';
 import { filter, pipe } from 'remeda'
-import type {BookingResponse} from "@services/OpenTable_Service.js";
+import type {BookingResponse} from "../../src/services/OpenTable_Service";
 
 export const handler: Handler = async (event) => {
   const API_KEY = Netlify.env.get("OPENTABLE_API_KEY"); // Managed in Netlify Dashboard
   try {
     // @ts-ignore
-    const response = await axios(import.meta.env.VITE_API_URL, {
+    const response = await axios(process.env.VITE_API_URL || '', {
       method:'GET',
       headers:{Accept: '*'}
     });

@@ -23,6 +23,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import type {TimeView} from "@mui/x-date-pickers";
 import {type BookingResponse, OpenTableService} from "../../services/OpenTable_Service.ts";
+import {Send_Mail_Service} from "../../services/EmailService.ts";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -167,12 +168,30 @@ const BookingForm = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formattedDate = bookingData.date ? bookingData.date.format('YYYY-MM-DD') : '';
     const formattedTime = bookingData.time ? bookingData.time.format('HH:mm') : '';
-    
+    const htmlMessage = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>Reservation Confirmation</title>
+    </head>
+    <body style="font-family: roboto; line-height: 1.6; color: #fff;">
+      <h2>Reservation Confirmation</h2>
+      <h4>Thank you, <b>${bookingData.name}</b>! Your reservation request for <b>${bookingData.guests}</b>
+          guests on <b>${formattedDate}</b> at <b>${formattedTime}</b> has been received. 
+      </h4>
+      <div style="margin-top: 3px; color: #f59e0b; font-weight: bold;">
+        ${bookingData.specialRequest}
+      </div>
+    </body>
+    </html>
+    `
     console.log('Booking submitted:', { ...bookingData, date: formattedDate, time: formattedTime });
+    await Send_Mail_Service(bookingData.email, htmlMessage);
     alert(`Thank you, ${bookingData.name}! Your reservation request for ${bookingData.guests}
                     guests on ${formattedDate} at ${formattedTime} has been received.`);
     setBookingData({
