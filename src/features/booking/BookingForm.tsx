@@ -176,7 +176,7 @@ const BookingForm = () => {
     <!DOCTYPE html>
     <html lang="en">
     <head>
-      <meta charset="UTF-8" initial-scale=1.0">
+      <meta charset="UTF-8">
       <title>Reservation Confirmation</title>
     </head>
     <body style="font-family: roboto; line-height: 1.6; color: #fff;">
