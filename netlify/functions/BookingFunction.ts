@@ -23,12 +23,12 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
     };
   }
 
-  const calendarId = process.env.VITE_GOOGLE_CALENDAR_ID;
-  const clientEmail = process.env.VITE_GOOGLE_CLIENT_EMAIL;
-  const calendarScope = process.env.VITE_GOOGLE_CALENDAR_SCOPE;
-  const eventScope = process.env.VITE_GOOGLE_EVENTS_SCOPE;
-  const privateKeyB64 = process.env.VITE_GOOGLE_PRIVATE_KEY_B64;
-  const impersonateUser = process.env.VITE_GOOGLE_CALENDAR_IMPERSONATE_USER
+  const calendarId = process.env.GOOGLE_CALENDAR_ID;
+  const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
+  const calendarScope = process.env.GOOGLE_CALENDAR_SCOPE;
+  const eventScope = process.env.GOOGLE_EVENTS_SCOPE;
+  const privateKeyB64 = process.env.GOOGLE_PRIVATE_KEY_B64;
+  const impersonateUser = process.env.GOOGLE_CALENDAR_IMPERSONATE_USER
 
   if (!calendarId || !clientEmail || !calendarScope || !eventScope || !privateKeyB64 || !impersonateUser) {
     return {
