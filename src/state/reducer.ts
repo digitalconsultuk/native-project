@@ -11,7 +11,8 @@ export type MenuState = { showMenu: boolean, menu: string, closeMenu?: () => boo
      case 'showGrill':
        return {...state,
          showMenu:true,
-         menu:'showGrill Menu Duis mollis, est non commodo luctus, nisi erat porttitor ligula.',
+         menu:'showGrill Menu Duis mollis, est non commodo luctus, nisi erat porttitor ligula.\
+         Another menu',
        }
      case 'showSalad':
        return {...state,

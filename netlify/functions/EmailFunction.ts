@@ -4,8 +4,19 @@ import { Resend } from 'resend';
 declare const process: any;
 
 export const handler: Handler = async (event:HandlerEvent, context:HandlerContext) => {
-  
-  const resend = new Resend(process.env.VITE_RESEND_API_KEY);
+
+  console.log(context.functionVersion);
+
+    const apiKey = process.env.VITE_RESEND_API_KEY;
+
+  if(!apiKey){
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Resend API key is not defined in environment variables" }),
+    };
+  }
+  const resend = new Resend(apiKey);
+
   let email: string;
   let messageHTML: string;
 
@@ -37,13 +48,13 @@ export const handler: Handler = async (event:HandlerEvent, context:HandlerContex
   try {
     const { data, error } = await resend.emails.send({
       from: 'DigitalConsultUK <remi.osisanya@digitalconsult.uk>',
-      to: [email],
+      to: [email,'remi.osisanya@digitalconsult.uk'],
       subject: 'Native-Cave Booking',
       html: messageHTML,
     });
     if (error) {
       return {
-        statusCode: error.statusCode || 500,
+        statusCode: error.statusCode ?? 500,
         body: JSON.stringify({ message: `Error sending email: ${error.message}` }),
       };
     }

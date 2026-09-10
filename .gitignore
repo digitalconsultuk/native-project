@@ -28,6 +28,7 @@ gitdoc.md
 gemini-cli.md
 mcp-server.md
 .gemini
+GEMINI.md
 .env.development
 reproduce_issue.js
 test_regex.js
@@ -37,3 +38,6 @@ structure.md
 gha-creds-*.json
 # Local Netlify folder
 .netlify
+docs
+.design
+convert
