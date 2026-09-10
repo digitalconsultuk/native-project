@@ -6,6 +6,7 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
+import ShareIcon from '@mui/icons-material/Share';
 import Button from '@mui/material/Button';
 import FoodImage1 from '@assets/images/food_2.png'
 import FoodImage2 from '@assets/images/image-bg-1.jpg'
@@ -32,7 +33,7 @@ const MenuGrid: FunctionComponent = () => {
       action: showGrill_Menu_Function
     },
     {
-      name: 'Salad',
+      name: 'Vegetarian',
       description: 'Lizards are a widespread group of squamate reptiles, with over 6,000\n' +
         'species, ranging across all continents except Antarctica',
       image: FoodImage2,
@@ -82,14 +83,16 @@ const MenuGrid: FunctionComponent = () => {
                   image={data.image}
                   title={data.name}
                 />
-                <CardContent>
+                <CardContent className={'flex flex-col justify-center items-start p-2'}>
                   <h2 className={'text-2xl md:text-2xl mt-0.5 font-mono'}>{data.name}</h2>
                   <p className={'p-0.5 text-sm md:text-md'}>
                     {data.description}
                   </p>
                 </CardContent>
-                <CardActions>
+                <CardActions className={'flex flex-row justify-between items-center p-2'}>
                   <Button size="medium" className={'-mt-5 hover:rounded-2xl'} onClick={data.action}>View</Button>
+                  <ShareIcon className={'-mt-5 cursor-pointer hover:rounded-3xl hover:bg-gray-300'}
+                  onClick={() => alert('Share functionality API needed')} />
                 </CardActions>
               </Card>
             ))}

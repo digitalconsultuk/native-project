@@ -2,12 +2,28 @@ import FoodBg from '@assets/images/sea.png';
 import { Button } from '@mui/material';
 import { Link } from 'react-router';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { useEffect, useState } from 'react';
+import { fetchPublicEvents, type CalendarEventItem} from '@services/CalendarService';
 
 /**
  * AboutFeature - A modern, minimal "About Us" section
  * featuring the Native Cave story with a clean layout.
  */
+ 
 const AboutFeature = () => {
+  const [events, setEvents] = useState<Array<CalendarEventItem>>([]);
+  
+  useEffect(() => { 
+    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+    const calendarId = import.meta.env.VITE_GOOGLE_CALENDAR_ID;
+
+    if (!apiKey || !calendarId) {
+      console.warn('Google Calendar: VITE_GOOGLE_API_KEY or VITE_GOOGLE_CALENDAR_ID is not configured in .env');
+      return;
+    }
+    fetchPublicEvents(calendarId, apiKey, setEvents);
+  }, []);
+    
   return (
     <section className="py-16 md:py-24 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
@@ -53,31 +69,52 @@ const AboutFeature = () => {
               </p>
             </div>
 
-            <div className="pt-4">
-              <Button 
-                component={Link}
-                to="/home"
-                variant="outlined"
-                size="large"
-                sx={{
-                  borderColor: '#f59e0b',
-                  color: '#f59e0b',
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: '16px',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  fontSize: '1rem',
-                  borderWidth: '2px',
-                  '&:hover': {
-                    borderColor: '#d97706',
-                    backgroundColor: 'rgba(245, 158, 11, 0.05)',
+            <div className="pt-4 flex flex-col gap-4">
+              <div>
+                <Button 
+                  component={Link}
+                  to="/home"
+                  variant="outlined"
+                  size="large"
+                  sx={{
+                    borderColor: '#f59e0b',
+                    color: '#f59e0b',
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: '16px',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    fontSize: '1rem',
                     borderWidth: '2px',
-                  }
-                }}
-              >
-                Learn More
-              </Button>
+                    '&:hover': {
+                      borderColor: '#d97706',
+                      backgroundColor: 'rgba(245, 158, 11, 0.05)',
+                      borderWidth: '2px',
+                    }
+                  }}
+                >
+                  Learn More
+                </Button>
+              </div>
+
+              {events.length > 0 && (
+                <div className="w-full mt-2 p-4 bg-amber-50/60 border border-amber-200/60 rounded-2xl shadow-xs">
+                  <h3 className="text-base font-semibold text-gray-800 mb-2">Upcoming Events:</h3>
+                  <ul className="list-disc pl-5 space-y-1.5">
+                    {events.map((event, index) => (
+                      <li key={event.id || index} className="text-sm text-gray-700">
+                        <span className="font-medium text-gray-900">{event.summary || 'Event'}</span> —{' '}
+                        {event.start?.dateTime
+                          ? new Date(event.start.dateTime).toLocaleString(undefined, {
+                              dateStyle: 'medium',
+                              timeStyle: 'short',
+                            })
+                          : (event.start?.date || 'Date TBA')}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
