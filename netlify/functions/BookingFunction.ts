@@ -34,7 +34,7 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
     return {
       statusCode: 400,
       body: JSON.stringify({
-        message: "Required Google Calendar environment variables (calendarId, clientEmail, privateKeyB64, calendarScope, eventScope) are undefined on the server",
+        message: `Required Google Calendar environment variable (${calendarId}, ${clientEmail}, ${privateKeyB64}, ${calendarScope}, ${eventScope}, ${impersonateUser} are undefined on the server`,
       }),
     };
   }
