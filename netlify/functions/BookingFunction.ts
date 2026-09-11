@@ -8,35 +8,60 @@
  * - Event details (summary, location, description, start time, end time)
  */
 
-import { Handler, HandlerContext, HandlerEvent } from "@netlify/functions";
+//import { Handler, HandlerContext, HandlerEvent } from "@netlify/functions";
+import type { Context, Config } from "@netlify/functions";
 import { google } from 'googleapis';
 
- declare const process: any;
+const jsonResponse = (
+  body: Record<string, unknown>,
+  status: number,
+  headers: Record<string, string> = {},
+) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json", ...headers },
+  });
 
-export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
-  console.log("BookingFunction version:", context.functionVersion);
+export default async (req: Request, context: Context) => {
+  
+  console.log("BookingFunction version:", context.server);
 
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ message: "Method Not Allowed" }),
-    };
+  if (req.method !== 'POST') {
+    return jsonResponse({ message: "Method Not Allowed" }, 405, { allow: "POST" });
   }
 
-  const calendarId = process.env.GOOGLE_CALENDAR_ID;
-  const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
-  const calendarScope = process.env.GOOGLE_CALENDAR_SCOPE;
-  const eventScope = process.env.GOOGLE_EVENTS_SCOPE;
-  const privateKeyB64 = process.env.GOOGLE_PRIVATE_KEY_B64;
-  const impersonateUser = process.env.GOOGLE_CALENDAR_IMPERSONATE_USER
+  const calendarId = Netlify.env.get("GOOGLE_CALENDAR_ID");
+  const clientEmail = Netlify.env.get("GOOGLE_CLIENT_EMAIL");
+  const calendarScope = Netlify.env.get("GOOGLE_CALENDAR_SCOPE");
+  const eventScope = Netlify.env.get("GOOGLE_EVENTS_SCOPE");
+  const privateKeyB64 = Netlify.env.get("GOOGLE_PRIVATE_KEY_B64");
+  const impersonateUser = Netlify.env.get("GOOGLE_CALENDAR_IMPERSONATE_USER")
 
-  if (!calendarId || !clientEmail || !calendarScope || !eventScope || !privateKeyB64 || !impersonateUser) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: `Required Google Calendar environment variable (${calendarId}, ${clientEmail}, ${privateKeyB64}, ${calendarScope}, ${eventScope}, ${impersonateUser} are undefined on the server`,
-      }),
-    };
+  if (
+    !calendarId ||
+    !clientEmail ||
+    !calendarScope ||
+    !eventScope ||
+    !privateKeyB64 ||
+    !impersonateUser
+  ) {
+    const missingEnv = Object.entries({
+      GOOGLE_CALENDAR_ID: calendarId,
+      GOOGLE_CLIENT_EMAIL: clientEmail,
+      GOOGLE_CALENDAR_SCOPE: calendarScope,
+      GOOGLE_EVENTS_SCOPE: eventScope,
+      GOOGLE_PRIVATE_KEY_B64: privateKeyB64,
+      GOOGLE_CALENDAR_IMPERSONATE_USER: impersonateUser,
+    })
+      .filter(([, value]) => !value)
+      .map(([name]) => name);
+
+    return jsonResponse(
+      {
+        message: `Required Google Calendar environment variables are undefined on the server: ${missingEnv.join(", ")}`,
+      },
+      400,
+    );
   }
 
   // Decode the base64-encoded private key - no JSON parsing needed
@@ -44,12 +69,9 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
 
   let eventPayload: Record<string, unknown>;
   try {
-    eventPayload = JSON.parse(event.body || '{}');
+    eventPayload = await req.json();
   } catch {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "Invalid JSON in request body" }),
-    };
+    return jsonResponse({ message: "Invalid JSON in request body" }, 400);
   }
   // 1. create event on the events endpoint
   try{
@@ -63,30 +85,39 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
         subject: impersonateUser
       }
      });
-  
+
      const createCalendarClient = google.calendar({version:'v3',auth:authentication});
-     const createdEvent = createCalendarClient.events.insert({
+     const createdEvent = await createCalendarClient.events.insert({
             calendarId: calendarId,
             sendUpdates:"all",
             requestBody: eventPayload
            });
-      if((await createdEvent).status == 200){
-        return{
-          statusCode: 200,
-          request_ID: context.awsRequestId,
-          body: JSON.stringify({message: (await createdEvent).data})
-        }
+
+      if(createdEvent.status === 200){
+        return jsonResponse(
+          { message: createdEvent.data, requestId: context.requestId },
+          200,
+          { "x-request-id": context.requestId },
+        );
       }
-      return {
-        statusCode: (await createdEvent).status,
-        request_ID: context.awsRequestId,
-        body: JSON.stringify({message: `Event cannot be created due to issues ${(await createdEvent).status}. please investigate`})
-      }
-      
+
+      return jsonResponse(
+        {
+          message: `Event cannot be created due to issues ${createdEvent.status}. please investigate`,
+          requestId: context.requestId,
+        },
+        createdEvent.status,
+        { "x-request-id": context.requestId },
+      );
+
   }
   catch(error){
      const message = error instanceof Error ? error.message : error
      console.error(message)
-     throw error
+     return jsonResponse(
+       { message: "Failed to create the calendar event", requestId: context.requestId },
+       500,
+       { "x-request-id": context.requestId },
+     );
   }
 };
