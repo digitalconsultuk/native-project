@@ -5,7 +5,7 @@
 
 export const Send_Mail_Service = async (email: string, messageHTML: string) => {
   ///.netlify/functions/EmailFunction
-  const response = await fetch("http://localhost:1571/send-email", {
+  const response = await fetch(`${import.meta.env.VITE_NETLIFY_BASE_URL}/send-email`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
