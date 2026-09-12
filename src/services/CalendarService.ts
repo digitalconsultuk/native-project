@@ -12,6 +12,9 @@
  */
 
 import { formatDateTimeForCalendarwithOffSet, dateTimeSplitter, convertDateTimeToLondonWith2HoursAdded } from "@/utils/DateUtils";
+import  dayjs  from 'dayjs';
+import  utc  from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone'
 
  export interface CalendarEventItem {
   id?: string;
@@ -23,7 +26,8 @@ import { formatDateTimeForCalendarwithOffSet, dateTimeSplitter, convertDateTimeT
   created?: string;
   updated?: string;
  }
-
+ dayjs.extend(utc)
+ dayjs.extend(timezone)
 /**
  * Retrieves public events from specified Google Calendar via events endpoint.
  * @param calendarId - The ID of the Google Calendar to check for availability.
@@ -96,11 +100,11 @@ interface FreeBusyRequest {
 export const fetchAvailableBookingSlots = async (_calendarId: string, _apiKey: string): Promise<Array<AvailableTimeSlot>> => {
 
     // 1. Set minimum time to today at 00:00
-  const minDateTime = new Date(new Date().setHours(0, 0, 0)).toISOString(); // today at 00:00
-   // 2. Set maximum time to 1 month from today at 23:59:59
-  const maxDate = new Date();
-  maxDate.setMonth(maxDate.getMonth() + 1);
-  const maxDateTime = new Date(maxDate.setHours(23, 59, 59)).toISOString();
+  const minDateTime = dayjs().startOf('day').format("YYYY-MM-DDTHH:mm:ssZ"); // today at 00:00
+   // 2. Set maximum time to 1 month from today at 23:59:59. This has to be a rolling month,
+   // not endOf('month') - on the 28th that would only look 2 days ahead and every booking
+   // past it would still read as free.
+  const maxDateTime = dayjs().add(1, 'month').endOf('day').format("YYYY-MM-DDTHH:mm:ssZ");
 
     const url = `https://www.googleapis.com/calendar/v3/freeBusy`;
     const response = await fetch(url, {
@@ -127,6 +131,70 @@ export const fetchAvailableBookingSlots = async (_calendarId: string, _apiKey: s
     const bookedDateTimeResponse: FreeBusyResponse = data;
     const bookedTimeSlots: Array<AvailableTimeSlot> = bookedDateTimeResponse.calendars[_calendarId]?.busy || [];
     return bookedTimeSlots;
+}
+
+/**
+ * Retrieves the individual booked slots from the events endpoint for a given calendar.
+ *
+ * The freeBusy endpoint cannot be used for this: it returns *merged* busy windows, so two
+ * reservations that overlap (a booking runs for 2 hours while slots are 15 minutes apart, so
+ * overlap is the normal case here) come back as a single block. Only the merged block's start
+ * is then known, and every later reservation inside it reads as free again on the TimePicker.
+ * The events endpoint keeps one entry per reservation, which is what the exact-start check in
+ * BookingForm needs.
+ *
+ * @param calendarId - The ID of the Google Calendar to check for availability.
+ * @param apiKey - The API key for accessing the Google Calendar API.
+ */
+export const fetchBookedEventSlots = async (_calendarId: string, _apiKey: string): Promise<Array<AvailableTimeSlot>> => {
+  const params: Record<string, string> = {
+    timeMin: dayjs().startOf('day').format("YYYY-MM-DDTHH:mm:ssZ"),
+    timeMax: dayjs().add(1, 'month').endOf('day').format("YYYY-MM-DDTHH:mm:ssZ"),
+    singleEvents: "true",
+    orderBy: "startTime",
+    showDeleted: "false",
+    maxResults: "2500",
+  };
+  const queryParams = new URLSearchParams(params);
+  const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(_calendarId)}/events?${queryParams}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': `${_apiKey}`,
+    },
+  });
+
+  if (!response.ok || response.status !== 200) {
+    throw new Error(`Google Calendar API request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  const eventItems: Array<CalendarEventItem> = data.items || [];
+
+  return eventItems.reduce<Array<AvailableTimeSlot>>((slots, item) => {
+    if (item.status === "cancelled") {
+      return slots;
+    }
+    // A timed event carries start.dateTime; an all-day closure carries start.date instead.
+    if (item.start?.dateTime && item.end?.dateTime) {
+      slots.push({
+        start: dayjs(item.start.dateTime).toISOString(),
+        end: dayjs(item.end.dateTime).toISOString(),
+      });
+      return slots;
+    }
+    if (item.start?.date && item.end?.date) {
+      // Google's all-day end.date is exclusive, so step back a day before taking the end of it.
+      // This lands on the exact London day boundaries shouldDisableDate compares against.
+      slots.push({
+        start: dayjs.tz(item.start.date, "Europe/London").startOf('day').toISOString(),
+        end: dayjs.tz(item.end.date, "Europe/London").subtract(1, 'day').endOf('day').toISOString(),
+      });
+    }
+    return slots;
+  }, []);
 }
 
 // event request model for creating a new event on the specified Google Calendar
@@ -160,7 +228,8 @@ export const createCalendarBookingEvent = async (_event: CreateEventRequest): Pr
     timeZone: _event.start.timeZone,
   };
   try{
-     const createEventRequest = fetch('/.netlify/functions/BookingFunction', {
+    ///.netlify/functions/BookingFunction
+     const createEventRequest = fetch('http://localhost:1571/reservation', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

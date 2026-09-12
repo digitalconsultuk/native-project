@@ -4,7 +4,8 @@
  * */
 
 export const Send_Mail_Service = async (email: string, messageHTML: string) => {
-  const response = await fetch("/.netlify/functions/EmailFunction", {
+  ///.netlify/functions/EmailFunction
+  const response = await fetch("http://localhost:1571/send-email", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

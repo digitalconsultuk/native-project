@@ -1,11 +1,11 @@
-import { Handler,HandlerContext,HandlerEvent} from "@netlify/functions";
+import { Config, Context } from "@netlify/functions";
 import { Resend } from 'resend';
 
 declare const process: any;
 
-export const handler: Handler = async (event:HandlerEvent, context:HandlerContext) => {
+export default async (req: Request, context:Context) => {
 
-  console.log(context.functionVersion);
+  console.log(context.server);
 
     const apiKey = process.env.VITE_RESEND_API_KEY;
 
@@ -21,7 +21,7 @@ export const handler: Handler = async (event:HandlerEvent, context:HandlerContex
   let messageHTML: string;
 
   try {
-    const parsed = JSON.parse(event.body || '{}');
+    const parsed = await req.json();
     email = parsed.email;
     messageHTML = parsed.messageHTML;
   } catch (err) {
@@ -31,7 +31,7 @@ export const handler: Handler = async (event:HandlerEvent, context:HandlerContex
     };
   }
 
-  if (event.httpMethod !== 'POST') {
+  if (req.method !== 'POST') {
     return {
       statusCode: 405,
       body: JSON.stringify({ message: "Method Not Allowed" }),
@@ -58,10 +58,7 @@ export const handler: Handler = async (event:HandlerEvent, context:HandlerContex
         body: JSON.stringify({ message: `Error sending email: ${error.message}` }),
       };
     }
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: "Email sent successfully", data: { data } }),
-    };
+    return new Response(JSON.stringify({message:"Email sent successfully", data}),{status:200, statusText:"OK"})
   } catch (err: any) {
     return {
       statusCode: 500,
@@ -69,3 +66,8 @@ export const handler: Handler = async (event:HandlerEvent, context:HandlerContex
     };
   }
 }
+
+// path alias
+ export const config:Config = {
+  path: "/send-email",
+ }

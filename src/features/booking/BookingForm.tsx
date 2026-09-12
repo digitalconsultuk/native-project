@@ -18,9 +18,10 @@ import timezone from "dayjs/plugin/timezone";
 import type { TimeView } from "@mui/x-date-pickers";
 
 import { Send_Mail_Service } from "@/services/EmailService";
-import { createCalendarBookingEvent, fetchAvailableBookingSlots, type AvailableTimeSlot, type CreateEventRequest } from "@/services/CalendarService";
+import { createCalendarBookingEvent, fetchBookedEventSlots, type AvailableTimeSlot, type CreateEventRequest } from "@/services/CalendarService";
 import { formatDateTimeForCalendarwithOffSet } from "@/utils/DateUtils";
 import { ToastContainer, toast } from 'react-toastify';
+import { LoadingComponent } from "./components/LoadingComponent";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -68,18 +69,23 @@ const BookingForm = () => {
   // time interval value
   const timeValue = {
     hours: 1,
-    minutes: 30,
+    minutes: 15,
   };
 
   // Booked slots fetched from Google Calendar freeBusy API
   const [bookedSlots, setBookedSlots] = useState<Array<AvailableTimeSlot>>([]);
   // Until the busy slots are known every date would look available, so the date picker stays disabled
   const [isLoadingSlots, setIsLoadingSlots] = useState(true);
-  const [isSuccessful, setIsSuccessful] = useState<boolean>(false)
+  // Bumped after every successful booking so the freeBusy effect re-runs each time
+  const [slotsRefreshKey, setSlotsRefreshKey] = useState<number>(0)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     let isMounted = true;
     const loadData = async () => {
+      // Re-disable the date picker on every run, not just the first, so the post-booking
+      // refetch cannot leave a just-booked slot selectable against the stale bookedSlots
+      setIsLoadingSlots(true);
       const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
       const calendarId = import.meta.env.VITE_GOOGLE_CALENDAR_ID;
       if (!apiKey || !calendarId) {
@@ -91,7 +97,9 @@ const BookingForm = () => {
       }
 
       try {
-        const slots: Array<AvailableTimeSlot> = await fetchAvailableBookingSlots(calendarId, apiKey);
+        // events, not freeBusy: freeBusy merges overlapping reservations into one block, which
+        // hides every booked start but the first and puts those slots back on the TimePicker
+        const slots: Array<AvailableTimeSlot> = await fetchBookedEventSlots(calendarId, apiKey);
         if (isMounted) {
           setBookedSlots(slots || []);
         }
@@ -107,18 +115,16 @@ const BookingForm = () => {
     return () => {
       isMounted = false;
     };
-  }, [isSuccessful]);
+  }, [slotsRefreshKey]);
 
+  // Availability is decided from the busy block's start only, never its end. A reservation
+  // runs for two hours on the calendar, but the restaurant seats other parties during that
+  // window, so the rest of the 15 minute slots must stay selectable - only the exact slot
+  // already taken is blocked. Whole-day closures are handled by the all-day check in
+  // shouldDisableDate below, which is the one place that does need the end.
   const isTimeBooked = useCallback(
     (target: Dayjs) => {
-      return bookedSlots.some((slot) => {
-        const start = dayjs(slot.start).tz("Europe/London");
-        const end = dayjs(slot.end).tz("Europe/London");
-        if (start.isSame(end)) {
-          return target.isSame(start);
-        }
-        return (target.isSame(start) || target.isAfter(start)) && target.isBefore(end);
-      });
+      return bookedSlots.some((slot) => target.isSame(dayjs(slot.start).tz("Europe/London"), "minute"));
     },
     [bookedSlots]
   );
@@ -241,6 +247,7 @@ const BookingForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true) // to show loading component
     const formattedDate = bookingData.date
       ? bookingData.date.format("YYYY-MM-DD")
       : "";
@@ -304,7 +311,7 @@ const BookingForm = () => {
                 specialRequest: "",
               });
               // to re-request google free/busy endpoint
-              setIsSuccessful(true)
+              setSlotsRefreshKey((key) => key + 1)
             }
             // to cover negative scenarios where the email service fails but the calendar event is created successfully, we can still show a success message for the booking and log the email failure for further investigation.
             else {
@@ -335,10 +342,17 @@ const BookingForm = () => {
           }
         );
       }
+      finally {
+        // hide the loading component whatever the outcome; the freeBusy refetch is driven by
+        // slotsRefreshKey above and is unaffected by this
+        setIsLoading(false)
+      }
   }
 
   return (
+   
     <LocalizationProvider dateAdapter={AdapterDayjs}>
+      
       <section className=" mt-9 md:-mt-5 py-5 md:py-12 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 md:py-8 lg:py-15">
           <div className="p-6 md:p-16 rounded-4xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-white border border-gray-100">
@@ -495,8 +509,8 @@ const BookingForm = () => {
                   onChange={handleDateChange}
                   shouldDisableDate={shouldDisableDate}
                   disabled={isLoadingSlots}
-                  minDate={dayjs().startOf("day")}
-                  timezone={"system"}
+                  minDate={dayjs().tz("Europe/London").startOf("day")}
+                  timezone={"Europe/London"}
                   slotProps={{
                     textField: {
                       fullWidth: true,
@@ -533,9 +547,9 @@ const BookingForm = () => {
                   timeSteps={timeValue}
                   value={bookingData.time}
                   onChange={handleTimeChange}
-                  timezone={"system"}
-                  minTime={dayjs().set("hour", FIRST_BOOKABLE_HOUR).startOf("hour")}
-                  maxTime={dayjs().set("hour", LAST_BOOKABLE_HOUR).startOf("hour")}
+                  timezone={"Europe/London"}
+                  minTime={dayjs().tz("Europe/London").hour(FIRST_BOOKABLE_HOUR).startOf("hour")}
+                  maxTime={dayjs().tz("Europe/London").hour(LAST_BOOKABLE_HOUR).startOf("hour")}
                   disableIgnoringDatePartForTimeValidation={false}
                   skipDisabled
                   shouldDisableTime={shouldDisableTime}
@@ -633,7 +647,8 @@ const BookingForm = () => {
           </div>
         </div>
       </section>
-    </LocalizationProvider>
-  );
+      {isLoading && <LoadingComponent isLoading={isLoading} dataValue="Request is loading...." />}
+    </LocalizationProvider> 
+ );
 };
 export { BookingForm };
