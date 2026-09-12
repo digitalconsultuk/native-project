@@ -229,7 +229,7 @@ export const createCalendarBookingEvent = async (_event: CreateEventRequest): Pr
   };
   try{
     ///.netlify/functions/BookingFunction
-     const createEventRequest = fetch(`${import.meta.env.VITE_NETLIFY_BASE_URL}/reservation`, {
+     const createEventRequest = fetch(`${import.meta.env.VITE_URL}/reservation`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
