@@ -5,7 +5,7 @@ functions = "netlify/functions"
 publish = "dist"
 
 [build.environment]
-VITE_URL="$URL"
+VITE_URL
 
 # Functions configuration
 [functions]
