@@ -4,6 +4,7 @@ command = "pnpm build"
 functions = "netlify/functions"
 publish = "dist"
 
+
 # Functions configuration
 [functions]
 directory = "netlify/functions"
