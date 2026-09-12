@@ -121,3 +121,8 @@ export default async (req: Request, context: Context) => {
      );
   }
 };
+
+// path alias
+export const config:Config = {
+  path: "/reservation",
+}
