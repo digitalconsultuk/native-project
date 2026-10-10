@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Context } from '@netlify/functions'
-import handler from './BookingFunction'
+import handler from '../functions/BookingFunction'
 
 const { insert, GoogleAuth, calendar } = vi.hoisted(() => {
   const insert = vi.fn()

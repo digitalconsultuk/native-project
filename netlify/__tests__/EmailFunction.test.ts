@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Context } from '@netlify/functions'
-import handler from './EmailFunction'
+import handler from '../functions/EmailFunction'
 
 const send = vi.fn()
 vi.mock('resend', () => ({
