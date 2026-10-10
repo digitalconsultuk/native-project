@@ -24,7 +24,7 @@ const FooterComponent: React.FunctionComponent = () => {
                 <Link to="/home" className="text-gray-600 hover:text-blue-600 transition-all hover:pl-2">Home</Link>
               </li>
               <li>
-                <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-all hover:pl-2">About Us</Link>
+                <Link to="/home#about" className="text-gray-600 hover:text-blue-600 transition-all hover:pl-2">About Us</Link>
               </li>
               <li>
                 <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition-all hover:pl-2">Contact</Link>

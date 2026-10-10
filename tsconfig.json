@@ -24,7 +24,7 @@
     "ignoreDeprecations": "5.0",
 
     /* Types & Path aliases */
-    "types": ["node", "vite/client"],
+    "types": ["node", "vite/client", "vitest/globals"],
     "paths": {
       "@/*": ["./src/*"],
       "@components/*": ["./src/components/*"],

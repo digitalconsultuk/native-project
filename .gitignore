@@ -41,3 +41,4 @@ gha-creds-*.json
 docs
 .design
 convert
+coverage

@@ -52,7 +52,7 @@ export default function MobileNavigation() {
           </div>
           <List className={'-mt-2'}>
             {menuItems.map((text) => {
-                const path = text === 'Menu' ? '/#menusection' : text === 'Services' ? '/#service' : text === 'Home' ? '/home' : '/contact';
+                const path = text === 'Menu' ? '/home#menusection' : text === 'Services' ? '/home#service' : text === 'Home' ? '/home' : '/contact';
                 return(
                   <ListItem key={text}>
                     <Link to={path}>
