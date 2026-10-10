@@ -21,9 +21,8 @@ const HeaderComponent = () => {
               <NavLink to="/home" className={({ isActive }) =>
                 isActive ? "text-amber-500 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
               }>Home</NavLink>
-              <NavLink to="/#menusection" className={({ isActive }) =>
-                isActive ? "text-amber-500 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
-              }>Menu</NavLink>
+              {/* a plain Link: NavLink ignores the hash, so it would light up alongside Home on /home */}
+              <Link to="/home#menusection" className={"text-black text-md md:text-xl font-mono"}>Menu</Link>
               <NavLink to="/contact" className={({ isActive }) =>
                 isActive ? "text-amber-500 text-md md:text-xl font-mono underline" : "text-black text-md md:text-xl font-mono"
               }>Contact</NavLink>

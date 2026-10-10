@@ -16,24 +16,33 @@ import PhoneInput from "react-phone-number-input/input";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import type { TimeView } from "@mui/x-date-pickers";
+import type { InputBaseComponentProps } from "@mui/material/InputBase";
 
 import { Send_Mail_Service } from "@/services/EmailService";
 import { createCalendarBookingEvent, fetchBookedEventSlots, type AvailableTimeSlot, type CreateEventRequest } from "@/services/CalendarService";
 import { formatDateTimeForCalendarwithOffSet } from "@/utils/DateUtils";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast, type ToastOptions } from 'react-toastify';
 import { LoadingComponent } from "./components/LoadingComponent";
+import {
+  FIRST_BOOKABLE_HOUR,
+  LAST_BOOKABLE_HOUR,
+  shouldDisableDate as shouldDisableDateFor,
+  shouldDisableTime as shouldDisableTimeFor,
+} from "./availability";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-// Bookable window in Europe/London: first selectable hour and last selectable hour.
-// These must stay in sync with the TimePicker minTime/maxTime below, otherwise a date
-// can look available because of a free slot the TimePicker never offers.
+const toastOptions: ToastOptions = {
+  position: "bottom-center",
+  autoClose: 5000,
+  closeOnClick: true,
+  pauseOnHover: true,
+};
 
-const FIRST_BOOKABLE_HOUR = 13;
-const LAST_BOOKABLE_HOUR = 20;
-
-const CustomPhoneInput = React.forwardRef((props: any, ref) => {
+// Adapts react-phone-number-input to MUI's inputComponent slot: the phone input reports a bare
+// value, so it is wrapped back into the { target: { name, value } } shape handleChange reads.
+const CustomPhoneInput = React.forwardRef<HTMLInputElement, InputBaseComponentProps>((props, ref) => {
   const { onChange, name, ...other } = props;
   return (
     <PhoneInput
@@ -41,12 +50,12 @@ const CustomPhoneInput = React.forwardRef((props: any, ref) => {
       ref={ref}
       defaultCountry="GB"
       onChange={(value) =>
-        onChange({
+        onChange?.({
           target: {
             name: name,
             value: value || "",
           },
-        })
+        } as React.ChangeEvent<HTMLInputElement>)
       }
     />
   );
@@ -117,109 +126,13 @@ const BookingForm = () => {
     };
   }, [slotsRefreshKey]);
 
-  // Availability is decided from the busy block's start only, never its end. A reservation
-  // runs for two hours on the calendar, but the restaurant seats other parties during that
-  // window, so the rest of the 15 minute slots must stay selectable - only the exact slot
-  // already taken is blocked. Whole-day closures are handled by the all-day check in
-  // shouldDisableDate below, which is the one place that does need the end.
-  const isTimeBooked = useCallback(
-    (target: Dayjs) => {
-      return bookedSlots.some((slot) => target.isSame(dayjs(slot.start).tz("Europe/London"), "minute"));
-    },
-    [bookedSlots]
-  );
-
-  // The slots the TimePicker can actually offer for a given day: inside the bookable
-  // window, on the picker's step granularity, and in the future when the day is today.
-  const getSelectableSlots = useCallback(
-    (day: Dayjs) => {
-      const londonDay = day.tz("Europe/London");
-      const now = dayjs().tz("Europe/London");
-      const isToday = londonDay.isSame(now, "day");
-      const step = timeValue.minutes || 30;
-      const slots: Array<Dayjs> = [];
-
-      for (let h = FIRST_BOOKABLE_HOUR; h <= LAST_BOOKABLE_HOUR; h++) {
-        for (let m = 0; m < 60; m += step) {
-          // the closing hour only offers the slot on the hour (see maxTime on the TimePicker)
-          if (h === LAST_BOOKABLE_HOUR && m > 0) {
-            break;
-          }
-          const candidate = londonDay.hour(h).minute(m).second(0).millisecond(0);
-          if (isToday && candidate.isBefore(now)) {
-            continue;
-          }
-          slots.push(candidate);
-        }
-      }
-
-      return slots;
-    },
-    [timeValue.minutes]
-  );
-
   const shouldDisableDate = useCallback(
-    (day: Dayjs) => {
-      const londonDay = day.tz("Europe/London");
-      const now = dayjs().tz("Europe/London");
-
-      if (londonDay.isBefore(now.startOf("day"))) {
-        return true;
-      }
-
-      // Check if the entire day is covered by an all-day busy event
-      const dayStart = londonDay.startOf("day");
-      const dayEnd = londonDay.endOf("day");
-
-      const isAllDayBooked = bookedSlots.some((slot) => {
-        const start = dayjs(slot.start).tz("Europe/London");
-        const end = dayjs(slot.end).tz("Europe/London");
-        return (start.isSame(dayStart) || start.isBefore(dayStart)) && (end.isSame(dayEnd) || end.isAfter(dayEnd));
-      });
-
-      if (isAllDayBooked) {
-        return true;
-      }
-
-      // Disable the date when the bookable window has already passed (today) or when
-      // every slot the TimePicker would offer on it is already booked.
-      const selectableSlots = getSelectableSlots(londonDay);
-
-      return selectableSlots.length === 0 || selectableSlots.every((candidate) => isTimeBooked(candidate));
-    },
-    [bookedSlots, getSelectableSlots, isTimeBooked]
+    (day: Dayjs) => shouldDisableDateFor(day, bookedSlots, timeValue.minutes),
+    [bookedSlots, timeValue.minutes]
   );
 
-  const shouldDisableTime = (value: Dayjs, view: TimeView) => {
-    if (!bookingData.date) return false;
-
-    const selectedDate = bookingData.date.tz("Europe/London");
-    const now = dayjs().tz("Europe/London");
-    const isToday = selectedDate.isSame(now, "day");
-
-    if (view === "hours") {
-      const hour = value.tz("Europe/London").hour();
-      const slotsInHour = getSelectableSlots(selectedDate).filter((candidate) => candidate.hour() === hour);
-
-      return slotsInHour.length === 0 || slotsInHour.every((candidate) => isTimeBooked(candidate));
-    }
-
-    if (view === "minutes") {
-      const candidate = selectedDate
-        .hour(value.tz("Europe/London").hour())
-        .minute(value.tz("Europe/London").minute())
-        .second(0)
-        .millisecond(0);
-
-      if (isToday && candidate.isBefore(now)) {
-        return true;
-      }
-
-      return isTimeBooked(candidate);
-    }
-
-    return false;
-  };
+  const shouldDisableTime = (value: Dayjs, view: TimeView) =>
+    shouldDisableTimeFor(value, view, bookingData.date, bookedSlots, timeValue.minutes);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e || !e.target) return;
@@ -290,43 +203,44 @@ const BookingForm = () => {
           };
         const calendarEventResponse = await createCalendarBookingEvent(eventPayload);
           if(calendarEventResponse.ok) {
-            const mailResponse = await Send_Mail_Service(bookingData.email, htmlMessage);
-            if (mailResponse.ok || mailResponse.status === 200) {
-              toast.success(
-                `Thank you, ${bookingData.name}! Your reservation request for ${bookingData.guests} guests on ${formattedDate} at ${formattedTime} has been received.`,
-                {
-                  position: "bottom-center",
-                  autoClose: 5000,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                }
-              );
-              setBookingData({
-                name: "",
-                email: "",
-                phone: "",
-                date: null,
-                time: null,
-                guests: "2",
-                specialRequest: "",
-              });
-              // to re-request google free/busy endpoint
-              setSlotsRefreshKey((key) => key + 1)
+            // The booking exists from here on, so a failed confirmation email must not read as a
+            // failed booking - otherwise the guest is told to retry and books the same slot twice.
+            let isEmailSent = false;
+            try {
+              const mailResponse = await Send_Mail_Service(bookingData.email, htmlMessage);
+              isEmailSent = mailResponse.ok;
+              if (!isEmailSent) {
+                console.error("Email service failed:", mailResponse.status, mailResponse.statusText);
+              }
+            } catch (mailError) {
+              console.error("Email service failed:", mailError);
             }
-            // to cover negative scenarios where the email service fails but the calendar event is created successfully, we can still show a success message for the booking and log the email failure for further investigation.
-            else {
-              console.error("Email service failed:", mailResponse.status, mailResponse.statusText);
-            } 
-          } 
+
+            const receivedMessage = `Thank you, ${bookingData.name}! Your reservation request for ${bookingData.guests} guests on ${formattedDate} at ${formattedTime} has been received.`;
+            if (isEmailSent) {
+              toast.success(receivedMessage, toastOptions);
+            } else {
+              toast.warning(
+                `${receivedMessage} We could not send your confirmation email, so please contact us if you do not hear back.`,
+                toastOptions
+              );
+            }
+            setBookingData({
+              name: "",
+              email: "",
+              phone: "",
+              date: null,
+              time: null,
+              guests: "2",
+              specialRequest: "",
+            });
+            // to re-request google free/busy endpoint
+            setSlotsRefreshKey((key) => key + 1)
+          }
           else {
           toast.error(
             `Sorry, ${bookingData.name}. Your reservation request for ${bookingData.guests} guests on ${formattedDate} at ${formattedTime} could not be processed due to Network Issues or bad data entered.`,
-            {
-              position: "bottom-center",
-              autoClose: 5000,
-              closeOnClick: true,
-              pauseOnHover: true,
-            }
+            toastOptions
           ); 
         }
       } 
@@ -334,12 +248,7 @@ const BookingForm = () => {
         console.error("Booking submit error:", error);
         toast.error(
           `Sorry, ${bookingData.name}. Your reservation request for ${bookingData.guests} guests on ${formattedDate} at ${formattedTime} could not be processed due to an unexpected error.`,
-          {
-            position: "bottom-center",
-            autoClose: 5000,
-            closeOnClick: true,
-            pauseOnHover: true,
-          }
+          toastOptions
         );
       }
       finally {
@@ -444,7 +353,7 @@ const BookingForm = () => {
                   placeholder="019XXXXXXXX"
                   slotProps={{
                     input: {
-                      inputComponent: CustomPhoneInput as any,
+                      inputComponent: CustomPhoneInput,
                       startAdornment: (
                         <InputAdornment position="start">
                           <PhoneIcon className="text-amber-500" />

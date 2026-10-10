@@ -213,7 +213,7 @@ export interface CreateEventRequest {
 }
 
 // create an event on the specified Google Calendar using the events via netlify function endpoint
-export const createCalendarBookingEvent = async (_event: CreateEventRequest): Promise<any> => {
+export const createCalendarBookingEvent = async (_event: CreateEventRequest): Promise<Response> => {
 
   // Derive end time as start + 2hrs (end may not be set by the caller)
   // const startMs = new Date(_event.start.dateTime).getTime();

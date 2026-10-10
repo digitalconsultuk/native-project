@@ -60,7 +60,8 @@ export default async (req: Request, context: Context) => {
       {
         message: `Required Google Calendar environment variables are undefined on the server: ${missingEnv.join(", ")}`,
       },
-      400,
+      // missing server configuration is a server fault, not a bad request
+      500,
     );
   }
 

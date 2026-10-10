@@ -1,7 +1,10 @@
 
 import * as React from 'react';
 import { Container, Typography, TextField, Button, Box, Grid, Paper } from '@mui/material';
-import { MailOutline, PhoneOutlined, LocationOnOutlined, Send } from '@mui/icons-material';
+import MailOutline from '@mui/icons-material/MailOutline';
+import PhoneOutlined from '@mui/icons-material/PhoneOutlined';
+import LocationOnOutlined from '@mui/icons-material/LocationOnOutlined';
+import Send from '@mui/icons-material/Send';
 
 interface ContactPageForm {
   name: string,
@@ -16,7 +19,6 @@ interface ContactPageForm {
   isSubjectError?:boolean,
   messageErrorMessage?: string,
   isMessageError?:boolean,
-  isValid: boolean
 }
 
 const ContactForm = () => {
@@ -34,8 +36,14 @@ const ContactForm = () => {
     isSubjectError:false,
     messageErrorMessage: '',
     isMessageError:false,
-    isValid: false,
   });
+
+  // Send is only enabled once every field has a value and none of them is in an error state
+  const isFormValid =
+    formModel.name.trim().length > 0 && !formModel.isNameError &&
+    formModel.email.length > 0 && !formModel.isEmailError &&
+    formModel.subject.trim().length > 0 && !formModel.isSubjectError &&
+    formModel.messageField.trim().length > 0 && !formModel.isMessageError;
   
   /**
    * name change field
@@ -65,15 +73,14 @@ const ContactForm = () => {
   const handleEmailChange = (e:React.ChangeEvent<HTMLInputElement>) => {
     if(!e.target) return;
     const { value } = e.target;
+    // [^\s@] already rules out whitespace anywhere in the address
     const emailPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    const noWhitespacePattern:RegExp = /^\S+$/;
-    if(emailPattern.test(value.trim()) && noWhitespacePattern.test(value)) {
+    if(emailPattern.test(value)) {
       setFormModel(prev=>({
         ...prev,
         email:value,
         isEmailError: false,
         emailErrorMessage: '',
-        isValid: true,
       }));
     } else {
       setFormModel(prevState =>({
@@ -81,7 +88,6 @@ const ContactForm = () => {
         email:value,
         isEmailError: true,
         emailErrorMessage: 'Email format is invalid',
-        isValid: false
       }));
     }
   }
@@ -241,8 +247,7 @@ const ContactForm = () => {
                   fullWidth 
                   variant="contained" 
                   size="large"
-                  //TODO:{/* to complete validation for button to enable */}
-                  disabled={!formModel.isValid}
+                  disabled={!isFormValid}
                   endIcon={<Send />}
                   sx={{
                     backgroundColor: '#f59e0b',

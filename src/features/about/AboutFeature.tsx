@@ -25,7 +25,7 @@ const AboutFeature = () => {
   }, []);
     
   return (
-    <section className="py-16 md:py-24 bg-white overflow-hidden">
+    <section id="about" className="py-16 md:py-24 bg-white overflow-hidden scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
           
